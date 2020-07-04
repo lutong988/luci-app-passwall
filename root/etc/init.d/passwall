@@ -40,6 +40,18 @@ for i in $module_list; do
   [ ! -x /usr/bin/$i ]&&chmod +x /usr/bin/$i
 done
 
+revert_dns()(
+  uci del dhcp.@dnsmasq[0].server
+  uci del dhcp.@dnsmasq[0].noresolv
+  uci commit dhcp
+)
+
+dns_change()(
+  uci add_list dhcp.@dnsmasq[0].server='127.0.0.1#1053'
+  uci set dhcp.@dnsmasq[0].noresolv='1'
+  uci commit dhcp
+)
+
 tcp2_w()(
   cat >/tmp/TcpRoute2.toml<<EOF
 addr="127.0.0.1:1025"
@@ -155,9 +167,13 @@ start_up()(
     (tcproute2 -config /tmp/TcpRoute2.toml -daemon > /dev/null 2>&1 &)
     dns_w
     smartdns -c /tmp/smartdns.conf
+    revert_dns
+    dns_change
   else
     shut_down
+    revert_dns
   fi
+  /etc/init.d/dnsmasq restart >/dev/null 2>&1
 )
 
 shut_down()(
