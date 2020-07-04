@@ -148,7 +148,7 @@ clear_rules()(
 ) 2> /dev/null
 
 start_up()(
-  if [ "$switch" -eq 1 ]; then
+  if [ -n "$switch" ]; then
     (ipt2socks -p 1025 -b 0.0.0.0 -B ::0 -l 1024 -T -4 -R > /dev/null 2>&1 &)
     tcp2_w
     (tcproute2 -config /tmp/TcpRoute2.toml -daemon > /dev/null 2>&1 &)
@@ -169,7 +169,7 @@ ss_nat()(
   [ -z "$port" ]&&pport=${ports//\ /,}
   [ -z "$ports" ]&&pport=${port//\ /,}
   [ "$port" -a "$ports" ]&&pport="${port//\ /,},${ports//\ /,}"
-  if [ "$switch" -eq 1 -a -n "$pport" ]; then
+  if [ -n "$switch" -a -n "$pport" ]; then
     ipset create lan hash:net
     if [ $? -eq 0 ]; then
       for i in $ipv4_lan; do
@@ -177,7 +177,7 @@ ss_nat()(
       done
     fi
     iptables -t nat -N passwall
-    iptables -w -t nat -A passwall -d -m set --match-set lan dst -j ACCEPT
+    iptables -w -t nat -A passwall -m set --match-set lan dst -j ACCEPT
     iptables -w -t nat -A passwall -p tcp -m multiport --dport $pport -j REDIRECT --to-ports 1024
     iptables -w -t nat -A PREROUTING -j passwall
   else
