@@ -20,18 +20,44 @@ jobs:
     runs-on: ubuntu-latest
 
     if: github.event.repository.owner.id == github.event.sender.id
+    
+    env:
+      #TARGET: bcm53xx
+      #SUBTARGET: generic
+      #TARGET_HOST: 
+      URL: https://downloads.openwrt.org/snapshots/targets/bcm53xx/generic/openwrt-sdk-bcm53xx-generic_gcc-8.4.0_musl_eabi.Linux-x86_64.tar.xz
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
 
-    # Runs a single command using the runners shell
-    - name: Run a one-line script
-      run: echo Hello, world!
-
-    # Runs a set of commands using the runners shell
-    - name: Run a multi-line script
+    - name: Install dependencies
       run: |
-        a="vbb"
-        echo "$a"
-        export b="bxbbx"
-        echo "$b"
+        sudo -E apt-get -qq update
+        sudo -E apt-get -y install build-essential asciidoc binutils bzip2 gawk gettext git libncurses5-dev libz-dev patch unzip zlib1g-dev lib32gcc1 libc6-dev-i386 subversion git-core gcc-multilib libelf-dev autoconf automake libtool wget curl
+        sudo -E apt-get -qq autoremove --purge
+        sudo -E apt-get -qq clean
+        cd $HOME
+    
+    - name: Install UPX
+      run: |
+        wget https://github.com/upx/upx/releases/download/v3.96/upx-3.96-amd64_linux.tar.xz
+        tar xvJf upx-3.96-amd64_linux.tar.xz
+        mv -f upx-3.96-amd64_linux/upx /usr/local/bin
+        
+    - name: Prepare Toolchain
+      run: |
+        wget --no-check-certificate -q -c $URL
+        tar xvJf openwrt-sdk-*.tar.xz
+        rm -f ${URL##*/}
+        cd openwrt-sdk-*
+
+    - name: Prepare Check
+      if: success()
+      run: |
+        ./scripts/feeds update -a
+        ./scripts/feeds install -a
+        make defconfig
+        make download
+        cd feeds
+        ls -l
+        
