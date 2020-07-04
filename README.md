@@ -11,8 +11,7 @@
 - [TcpRoute2](https://github.com/GameXG/TcpRoute2) 代理核心   
 - [SmartDNS](https://github.com/pymumu/smartdns) 防止dns污染  
 
-将编译文件分别命名为 transocks-wong TcpRoute2 smartdns 移动到/usr/bin目录并授予执行权限，再安装ipk    
-目前源码已经替换transocks-wong为ipt2socks，TcpRoute2改为tcproute2
+将编译文件分别命名为 ipt2socks tcproute2 smartdns 移动到/usr/bin目录并授予执行权限，再安装ipk
 
 必须包含有一组国外dns像8.8.8.8，主要是针对运营商返回 127.0.0.1 的污染，如 rfa.org jav321.com 还有域名黑名单等功能
 
