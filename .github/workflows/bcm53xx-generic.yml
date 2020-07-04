@@ -31,5 +31,7 @@ jobs:
     # Runs a set of commands using the runners shell
     - name: Run a multi-line script
       run: |
-        wget https://raw.githubusercontent.com/yiguihai/luci-app-passwall/master/build.sh
-        bash -x build.sh
+        a="vbb"
+        echo "$a"
+        export b="bxbbx"
+        echo "$b"
