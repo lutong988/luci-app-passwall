@@ -31,6 +31,7 @@ if [ -s /etc/config/passwall ]; then
   switch=$(uci get passwall.@global[0].switch)
   port=$(uci get passwall.@global[0].port)
   ports=$(uci get passwall.@global[0].ports)
+  cores=$(cat /proc/cpuinfo|grep processor|wc -l)
 fi
 
 for i in $module_list; do
@@ -149,7 +150,7 @@ clear_rules()(
 
 start_up()(
   if [ -n "$switch" ]; then
-    (ipt2socks -p 1025 -b 0.0.0.0 -B ::0 -l 1024 -T -4 -R > /dev/null 2>&1 &)
+    (ipt2socks -p 1025 -b 0.0.0.0 -B ::0 -l 1024 -j ${cores:=1} -T -4 -R > /dev/null 2>&1 &)
     tcp2_w
     (tcproute2 -config /tmp/TcpRoute2.toml -daemon > /dev/null 2>&1 &)
     dns_w
