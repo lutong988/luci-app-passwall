@@ -33,10 +33,11 @@ jobs:
     - name: Install dependencies
       run: |
         cores=$(cat /proc/cpuinfo|grep processor|wc -l)
+        export cc="$cores"
         b="vvb"
         echo "$cores"
     
     - name: Install UPX
       run: |
         echo "$cores"
-        echo "$b"
+        echo "$cc"
