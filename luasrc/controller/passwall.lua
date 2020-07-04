@@ -12,8 +12,8 @@ end
 
 function act_status()
   local list = {
-    "transocks-wong",
-    "TcpRoute2",
+    "ipt2socks",
+    "tcproute2",
     "smartdns"
   }
   local i, v
