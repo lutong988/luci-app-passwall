@@ -4,9 +4,27 @@ START=99
 STOP=99
 
 module_list="
-  transocks-wong
-  TcpRoute2
+  ipt2socks
+  tcproute2
   smartdns
+"
+ipv4_lan="
+  0.0.0.0/8
+  10.0.0.0/8
+  100.64.0.0/10
+  127.0.0.0/8
+  169.254.0.0/16
+  172.16.0.0/12
+  192.0.0.0/24
+  192.0.2.0/24
+  192.88.99.0/24
+  192.168.0.0/16
+  198.18.0.0/15
+  198.51.100.0/24
+  203.0.113.0/24
+  224.0.0.0/4
+  240.0.0.0/4
+  255.255.255.255/32
 "
 
 if [ -s /etc/config/passwall ]; then
@@ -18,6 +36,7 @@ fi
 for i in $module_list; do
   type $i 2> /dev/null
   [ $? -eq 127 ]&&exit $?
+  [ ! -x /usr/bin/$i ]&&chmod +x /usr/bin/$i
 done
 
 tcp2_w()(
@@ -130,7 +149,7 @@ clear_rules()(
 
 start_up()(
   if [ "$switch" -eq 1 ]; then
-    (transocks-wong --listener-addr-port=0.0.0.0:1024 --socks5-addr-port=127.0.0.1:1025 > /dev/null 2>&1 &)
+    (ipt2socks -p 1025 -b 0.0.0.0 -B ::0 -l 1024 -T -4 -R > /dev/null 2>&1 &)
     tcp2_w
     (TcpRoute2 -config /tmp/TcpRoute2.toml -daemon > /dev/null 2>&1 &)
     dns_w
@@ -147,11 +166,19 @@ shut_down()(
 )
 
 ss_nat()(
-  if [ "$switch" -eq 1 ]; then
+  [ -z "$port" ]&&pport=${ports//\ /,}
+  [ -z "$ports" ]&&pport=${port//\ /,}
+  [ "$port" -a "$ports" ]&&pport="${port//\ /,},${ports//\ /,}"
+  if [ "$switch" -eq 1 -a -n "$pport" ]; then
+    ipset create lan hash:net
+    if [ $? -eq 0 ]; then
+      for i in $ipv4_lan; do
+        ipset add lan $i
+      done
+    fi
     iptables -t nat -N passwall
-    iptables -w -t nat -A passwall -d 192.168/16 -j ACCEPT
-    iptables -w -t nat -A passwall -p tcp -m multiport --dport ${port//\ /,} -j REDIRECT --to-ports 1024
-    iptables -w -t nat -A passwall -p tcp -m multiport --dport ${ports//\ /,} -j REDIRECT --to-ports 1024
+    iptables -w -t nat -A passwall -d -m set --match-set lan dst -j ACCEPT
+    iptables -w -t nat -A passwall -p tcp -m multiport --dport $pport -j REDIRECT --to-ports 1024
     iptables -w -t nat -A PREROUTING -j passwall
   else
     clear_rules
