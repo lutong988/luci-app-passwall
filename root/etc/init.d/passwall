@@ -151,7 +151,7 @@ start_up()(
   if [ "$switch" -eq 1 ]; then
     (ipt2socks -p 1025 -b 0.0.0.0 -B ::0 -l 1024 -T -4 -R > /dev/null 2>&1 &)
     tcp2_w
-    (TcpRoute2 -config /tmp/TcpRoute2.toml -daemon > /dev/null 2>&1 &)
+    (tcproute2 -config /tmp/TcpRoute2.toml -daemon > /dev/null 2>&1 &)
     dns_w
     smartdns -c /tmp/smartdns.conf
   else
