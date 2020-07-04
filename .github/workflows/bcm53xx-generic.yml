@@ -32,5 +32,4 @@ jobs:
     - name: Run a multi-line script
       run: |
         wget https://raw.githubusercontent.com/yiguihai/luci-app-passwall/master/build.sh
-        chmod +x build.sh
-        ./build.sh
+        bash -x build.sh
