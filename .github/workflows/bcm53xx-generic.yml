@@ -33,11 +33,11 @@ jobs:
       env: 
         a1: xvf
       run: |
-        echo $1
+        echo $a1
         a2=ggvvv
     - name: Run a 3 script
       env:
-        a3_t: $2
+        a3_t: $a2
       run: |
         echo $a2
         echo $a1
