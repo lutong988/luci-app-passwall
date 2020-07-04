@@ -7,12 +7,14 @@
 - [TcpRoute2](https://github.com/GameXG/TcpRoute2) 代理核心   
 - [SmartDNS](https://github.com/pymumu/smartdns) 防止dns污染  
 
-将编译文件分别命名为 transocks-wong TcpRoute2 smartdns 移动到/usr/bin目录并授予执行权限，再安装ipk
+将编译文件分别命名为 transocks-wong TcpRoute2 smartdns 移动到/usr/bin目录并授予执行权限，再安装ipk    
+目前源码已经替换transocks-wong为ipt2socks，TcpRoute2改为tcproute2
 
 提供1053端口防止dns污染。可作为dnsmasq上游，主要是针对运营商返回 127.0.0.1 的污染，如 rfa.org jav321.com 还有域名黑名单等功能
 
 ## TODO
-使用ipt2socks代替transocks-wong或者等待TcpRoute2更新
+增加自动编译ipk包
+增加自动修改dns指向1053端口
 ### 展示图
 <img src="https://github.com/yiguihai/luci-app-passwall/raw/master/view/1.png" alt="展示图" title="查看图片" />
 <img src="https://github.com/yiguihai/luci-app-passwall/raw/master/view/2.png" alt="展示图" title="查看图片" />
