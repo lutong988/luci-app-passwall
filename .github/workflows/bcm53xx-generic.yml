@@ -100,9 +100,6 @@ jobs:
         fi
         export PATH=$PATH:/usr/local/go/bin:${dirn}/${dirn1}/staging_dir/${dirn2}/bin
         export STAGING_DIR=${dirn}/${dirn1}
-        type arm-openwrt-linux-ranlib
-        arm-openwrt-linux-gcc -v
-        exit 0
         mkdir -p ${HOME}/ssl
         git clone https://github.com/openssl/openssl
         cd openssl
