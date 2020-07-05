@@ -100,16 +100,15 @@ jobs:
         fi
         export PATH=$PATH:/usr/local/go/bin:${dirn}/${dirn1}/staging_dir/${dirn2}/bin
         export STAGING_DIR=${dirn}/${dirn1}
-        sudo mkdir -p ${HOME}/ssl
-        wget --no-check-certificate --quiet --continue --show-progress https://www.openssl.org/source/openssl-1.1.1g.tar.gz
-        tar zxvf openssl-1.1.1g.tar.gz
-        rm -f openssl-1.1.1g.tar.gz
-        cd openssl-1.1.1g
+        sudo mkdir -p ${dirn}/ssl
+        git clone https://github.com/openssl/openssl
+        cd openssl
+        git submodule update --init --recursive
         ./Configure \
         no-asm \
         --cross-compile-prefix=${target_host}- \
-        --prefix=${HOME}/ssl \
+        --prefix=${dirn}/ssl \
         linux-armv4
-        make -j ${cores:=1}
+        make
         sudo make install_sw
         make clean
