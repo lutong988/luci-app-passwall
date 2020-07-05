@@ -118,4 +118,4 @@ jobs:
       uses: actions/upload-artifact@master
       with:
         name: OpenWrt
-        path: openwrt/bin
+        path: /home/runner/work/luci-app-passwall/luci-app-passwall/openwrt-sdk-bcm53xx-generic_gcc-8.4.0_musl_eabi.Linux-x86_64/openssl/Makefile
