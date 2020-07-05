@@ -75,6 +75,8 @@ jobs:
         dirn1=${dirn1%*${dirn1:(-7)}} 
         [ -d ${dirn1} ]&&echo "#工具链解压文件夹 ${dirn1}"||echo "没有识别工具链解压文件夹!"&&exit 127
         cd ${dirn1}
+        pwd
+        exit 0
         for i in staging_dir/* ;do
           [[ ${i##*/} != "host" ]]&&dirn2=${i##*/}
         done
