@@ -100,6 +100,45 @@ jobs:
         fi
         export PATH=$PATH:/usr/local/go/bin:${dirn}/${dirn1}/staging_dir/${dirn2}/bin
         export STAGING_DIR=${dirn}/${dirn1}
+        echo "更新自带软件包..."
+        ./scripts/feeds update -a
+        echo "安装自带软件包..."
+        ./scripts/feeds install -a
+        echo "使用默认配置..."
+        make defconfig
+        echo "下载自带软件包数据源码..."
+        make download -j ${cores:=1}
+        [ ! -d feeds/luci/applications ]&&echo "没有找到 feeds/luci/applications 路径!"&&exit 127
+        echo "克隆 luci-app-passwall 中..."
+        git clone https://github.com/yiguihai/luci-app-passwall feeds/luci/applications/luci-app-passwall
+        echo "更新 luci-app-passwall 软件包..."
+        ./scripts/feeds update luci-app-passwall
+        echo "下载 luci-app-passwall 软件包..."
+        ./scripts/feeds install luci-app-passwall
+        echo "进入 luci-app-passwall 软件包目录..."
+        cd feeds/luci/applications/luci-app-passwall
+        echo "更新 luci-app-passwall 的子模块..."
+        git submodule update --init --recursive
+        echo "编译 po2lmo ..."
+        cd tools/po2lmo
+        make -j ${cores:=1}
+        sudo make install
+        make clean
+        echo "编译 TcpRoute2 ..."
+        cd ../TcpRoute2
+        go get -d -v ./...
+        env AR="${target_host}-ar" CC="${target_host}-gcc" CXX="${target_host}-gcc++" CGO_ENABLED=1 GO111MODULE=auto GOOS=${GO_OS} GOARCH=${GO_ARCH} GOARM=5 go build -ldflags "-s -w" -o tcproute2 #编译armv5版本的tcproute2 https://github.com/golang/go/wiki/GoArm
+        upx --ultra-brute --best -v tcproute2
+        mkdir -p ../../root/bin
+        mv -f tcproute2 ../../root/bin
+        echo "编译 ipt2socks ..."
+        cd ../ipt2socks
+        make CC=${target_host}-gcc -j ${cores:=1}
+        upx --ultra-brute --best -v ipt2socks
+        mv -f ipt2socks ../../root/bin
+        make clean
+        echo "编译 smartdns ..."
+        cd ../smartdns
         mkdir -p ${dirn}/ssl
         git clone https://github.com/openssl/openssl
         cd openssl
@@ -111,10 +150,23 @@ jobs:
         linux-armv4
         make -j ${cores:=1}
         make install_sw
-        make clean
-
-    #- name: Upload artifact
-      #uses: actions/upload-artifact@master
-      #with:
-        #name: OpenWrt
-        #path: /home/runner/work/luci-app-passwall/luci-app-passwall/openwrt-sdk-bcm53xx-generic_gcc-8.4.0_musl_eabi.Linux-x86_64/openssl/Makefile
+        make distclean
+        #因为make install乱加sudo试错了一天 https://stackoverflow.com/questions/23078282/ranlib-not-found 才解决。555 泪目今晚加鸡腿犒劳自己。
+        cd ..
+        make CFLAGS="-I ${dirn}/ssl/include" LDFLAGS="-L ${dirn}/ssl/lib" CC="${target_host}-gcc"
+        ${target_host}-strip /src/smartdns
+        upx --ultra-brute --best -v /src/smartdns
+        mv /src/smartdns ../../root/bin
+        chmod -R +x ../../root/bin
+        ls -l ../../root/bin
+        cd ${dirn}/${dirn1}
+        make package/luci-app-passwall/compile -j${cores:=1} V=s
+        mkdir -p ${dirn}/bin
+        find bin/ -type f -name "*luci-app-passwall*" | xargs -t -i mv -vf {} ${dirn}/bin
+        
+    - name: Upload artifact
+      if: success()
+      uses: actions/upload-artifact@master
+      with:
+        name: luci-app-passwall
+        path: ${HOME}/bin
