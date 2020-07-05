@@ -109,6 +109,13 @@ jobs:
         --cross-compile-prefix=${target_host}- \
         --prefix=${dirn}/ssl \
         linux-armv4
-        make V=s
-        sudo make install_sw
+        #make V=s
+        #sudo make install_sw
         make clean
+pwd
+exit 0
+    - name : Upload artifact
+      uses: actions/upload-artifact@master
+      with:
+        name: OpenWrt
+        path: openwrt/bin
