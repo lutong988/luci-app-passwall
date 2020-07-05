@@ -111,6 +111,6 @@ jobs:
         --openssldir=${HOME}/ssl \
         --prefix=${HOME}/ssl \
         linux-armv4
-        make -j ${cores:=1}
+        make AR="${target_host}-ar" AS="${target_host}-gcc" CC="${target_host}-gcc" CXX="${target_host}-gcc++" LD="${target_host}-ld" LDD="${target_host}-ldd" STRIP="${target_host}-strip" RANLIB="${target_host}-ranlib" -j ${cores:=1}
         sudo make install
         make clean
