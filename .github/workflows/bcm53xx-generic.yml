@@ -126,7 +126,7 @@ jobs:
         echo "编译 TcpRoute2 ..."
         cd ../TcpRoute2
         go get -d -v ./...
-        env CGO_ENABLED=1 GO111MODULE=auto GOOS=${GO_OS} GOARCH=${GO_ARCH} GOARM=5 go build -ldflags "-s -w" -o tcproute2 #编译armv5版本的tcproute2 https://github.com/golang/go/wiki/GoArm
+        env AR="${target_host}-ar" CC="${target_host}-gcc" CXX="${target_host}-gcc++" CGO_ENABLED=1 GO111MODULE=auto GOOS=${GO_OS} GOARCH=${GO_ARCH} GOARM=5 go build -ldflags "-s -w" -o tcproute2 #编译armv5版本的tcproute2 https://github.com/golang/go/wiki/GoArm
         upx --ultra-brute --best -v tcproute2
         mkdir -p ../../root/bin
         mv -f tcproute2 ../../root/bin
