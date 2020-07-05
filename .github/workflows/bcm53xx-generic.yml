@@ -72,11 +72,13 @@ jobs:
         cores=$(cat /proc/cpuinfo|grep processor|wc -l)
         dirn=$(pwd) #主目录
         dirn1=${URL##*/}
-        dirn1=${dirn1%*${dirn1:(-7)}} #工具链解压文件夹
+        dirn1=${dirn1%*${dirn1:(-7)}} 
+        echo "#工具链解压文件夹 ${dirn1}"
         cd ${dirn1}
         for i in staging_dir/* ;do
-          [[ ${i##*/} != "host" ]]&&dirn2="$i" #编译器存放目录
+          [[ ${i##*/} != "host" ]]&&dirn2="$i"
         done
+        echo "#编译器存放目录 ${dirn2}"
         [ -z ${dirn2} ]&&exit $?
         for i in staging_dir/${dirn2}/bin/*-gcc; do
           target_host=$(echo ${i##*/}|grep -oP "^[A-Za-z0-9]+\-[A-Za-z0-9]+\-[A-Za-z0-9]+\-[A-Za-z0-9]+$")
