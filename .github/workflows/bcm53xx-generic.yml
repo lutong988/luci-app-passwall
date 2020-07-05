@@ -112,9 +112,9 @@ jobs:
         #make V=s
         #sudo make install_sw
         make clean
-pwd
-exit 0
-    - name : Upload artifact
+        pwd
+        exit 0
+    - name: Upload artifact
       uses: actions/upload-artifact@master
       with:
         name: OpenWrt
