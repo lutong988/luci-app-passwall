@@ -100,7 +100,7 @@ jobs:
         fi
         export PATH=$PATH:/usr/local/go/bin:${dirn}/${dirn1}/staging_dir/${dirn2}/bin
         export STAGING_DIR=${dirn}/${dirn1}
-        mkdir -p ${HOME}/ssl
+        sudo mkdir -p ${HOME}/ssl
         wget --no-check-certificate --quiet --continue --show-progress https://www.openssl.org/source/openssl-1.1.1g.tar.gz
         tar zxvf openssl-1.1.1g.tar.gz
         rm -f openssl-1.1.1g.tar.gz
