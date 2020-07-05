@@ -83,13 +83,21 @@ jobs:
         for i in staging_dir/* ;do
           [[ ${i##*/} != "host" ]]&&dirn2=${i##*/}
         done
-        [ -z ${dirn2} ]&&echo "没有识别出编译器存放目录!"&&exit 127||echo "#编译器存放目录 ${dirn2}"
+        if [ ${dirn2} ]; then
+          echo "#编译器存放目录 ${dirn2}"
+        else
+          echo "没有识别出编译器存放目录!"
+          exit 127
+        fi
         for i in staging_dir/${dirn2}/bin/*-gcc; do
-          #target_host=$(echo ${i##*/}|grep -oP "^[A-Za-z0-9]+\-[A-Za-z0-9]+\-[A-Za-z0-9]+\-[A-Za-z0-9]+$")
-          echo "$i"
+          target_host=$(echo ${i##*/}|grep -oP "[A-Za-z0-9]+\-[A-Za-z0-9]+\-[A-Za-z0-9]+")
         done
-        exit 0
-        [ -z ${target_host} ]&&echo "没有识别出编译器!"&&exit 127||echo "#编译器平台为 ${target_host}"
+        if [ ${target_host} ]; then
+          echo "#编译器平台为 ${target_host}"
+        else
+          echo "没有识别出编译器!"
+          exit 127
+        fi
         export PATH=$PATH:/usr/local/go/bin:${dirn}/${dirn1}/staging_dir/${dirn2}/bin
         echo "更新自带软件包..."
         ./scripts/feeds update -a
