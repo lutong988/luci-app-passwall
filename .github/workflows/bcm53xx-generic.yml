@@ -51,7 +51,7 @@ jobs:
         #Download Latest Go
         echo "Finding latest version of Go for AMD64..."
         latest_version="$(wget -qO- https://golang.org/dl/|grep 'download downloadBox' | grep -oP '[0-9]+\.[0-9]+\.[0-9]+' | head -n 1)"
-        [ -z ${latest_version} ]&&exit $?
+        [ -z ${latest_version} ]&&exit 127
         echo "Downloading latest Go for AMD64: ${latest_version}"
         wget --quiet --continue --show-progress https://dl.google.com/go/go${latest_version}.linux-amd64.tar.gz
         [ $? -ne 0 ]&&exit $?
@@ -73,16 +73,16 @@ jobs:
         dirn=$(pwd) #主目录
         dirn1=${URL##*/}
         dirn1=${dirn1%*${dirn1:(-7)}} 
-        [ -d ${dirn1} ]&&echo "#工具链解压文件夹 ${dirn1}"||echo "没有识别工具链解压文件夹!"&&exit $?
+        [ -d ${dirn1} ]&&echo "#工具链解压文件夹 ${dirn1}"||echo "没有识别工具链解压文件夹!"&&exit 127
         cd ${dirn1}
         for i in staging_dir/* ;do
           [[ ${i##*/} != "host" ]]&&dirn2=${i##*/}
         done
-        [ -z ${dirn2} ]&&echo "没有识别出编译器存放目录!"&&exit $?||echo "#编译器存放目录 ${dirn2}"
+        [ -z ${dirn2} ]&&echo "没有识别出编译器存放目录!"&&exit 127||echo "#编译器存放目录 ${dirn2}"
         for i in staging_dir/${dirn2}/bin/*-gcc; do
           target_host=$(echo ${i##*/}|grep -oP "^[A-Za-z0-9]+\-[A-Za-z0-9]+\-[A-Za-z0-9]+\-[A-Za-z0-9]+$")
         done
-        [ -z ${target_host} ]&&echo "没有识别出编译器!"&&exit $?||echo "#编译器平台为 ${target_host}"
+        [ -z ${target_host} ]&&echo "没有识别出编译器!"&&exit 127||echo "#编译器平台为 ${target_host}"
         export PATH=$PATH:/usr/local/go/bin:${dirn}/${dirn1}/staging_dir/${dirn2}/bin
         echo "更新自带软件包..."
         ./scripts/feeds update -a
@@ -92,7 +92,7 @@ jobs:
         make defconfig
         echo "下载自带软件包数据源码..."
         make download -j ${cores:=1}
-        [ ! -d feeds/luci/applications ]&&echo "没有找到 feeds/luci/applications 路径!"&&exit $?
+        [ ! -d feeds/luci/applications ]&&echo "没有找到 feeds/luci/applications 路径!"&&exit 127
         echo "克隆 luci-app-passwall 中..."
         git clone https://github.com/yiguihai/luci-app-passwall feeds/luci/applications/luci-app-passwall
         echo "更新 luci-app-passwall 软件包..."
