@@ -121,7 +121,7 @@ jobs:
         echo "编译 po2lmo ..."
         cd tools/po2lmo
         make -j ${cores:=1}
-        make install
+        sudo make install
         make clean
         echo "编译 TcpRoute2 ..."
         cd ../TcpRoute2
@@ -165,5 +165,5 @@ jobs:
         --prefix=${HOME}/ssl \
         linux-armv4
         make -j ${cores:=1}
-        make install
+        sudo make install
         make clean
