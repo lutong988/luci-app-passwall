@@ -69,7 +69,7 @@ jobs:
 
     - name: Build
       run: |
-        cores=$(cat /proc/cpuinfo|grep processor|wc -l)
+        cores=$(sudo cat /proc/cpuinfo|grep processor|wc -l)
         dirn=$(pwd) #主目录
         dirn1=${URL##*/}
         dirn1=${dirn1%*${dirn1:(-7)}} 
