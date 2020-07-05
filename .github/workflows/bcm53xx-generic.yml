@@ -73,8 +73,8 @@ jobs:
         dirn=$(pwd) #主目录
         dirn1=${URL##*/}
         dirn1=${dirn1%*${dirn1:(-7)}} 
-        [ -d ${dirn1} ]&&echo "#工具链解压文件夹 ${dirn1}"||echo "没有识别工具链解压文件夹!"&&exit 127
-        cd ${dirn1}
+        [ -d ${dirn1} ]&&echo "#工具链解压文件夹 ${dirn1}"
+        cd "${dirn1}"
         pwd
         exit 0
         for i in staging_dir/* ;do
