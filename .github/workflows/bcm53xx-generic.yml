@@ -82,8 +82,8 @@ jobs:
         for i in staging_dir/${dirn2}/bin/*-gcc; do
           target_host=$(echo ${i##*/}|grep -oP "^[A-Za-z0-9]+\-[A-Za-z0-9]+\-[A-Za-z0-9]+\-[A-Za-z0-9]+$")
         done
-        export PATH=$PATH:/usr/local/go/bin:${dirn}/${dirn1}/staging_dir/${dirn2}/bin
         [ -z ${target_host} ]&&echo "没有识别出编译器!"&&exit $?||echo "#编译器平台为 ${target_host}"
+        export PATH=$PATH:/usr/local/go/bin:${dirn}/${dirn1}/staging_dir/${dirn2}/bin
         echo "更新自带软件包..."
         ./scripts/feeds update -a
         echo "安装自带软件包..."
@@ -92,7 +92,6 @@ jobs:
         make defconfig
         echo "下载自带软件包数据源码..."
         make download -j ${cores:=1}
-        [ -d feeds/luci/applications ]||exit $?
         [ ! -d feeds/luci/applications ]&&echo "没有找到 feeds/luci/applications 路径!"&&exit $?
         echo "克隆 luci-app-passwall 中..."
         git clone https://github.com/yiguihai/luci-app-passwall feeds/luci/applications/luci-app-passwall
@@ -102,7 +101,7 @@ jobs:
         ./scripts/feeds install luci-app-passwall
         echo "进入 luci-app-passwall 软件包目录..."
         cd feeds/luci/applications/luci-app-passwall
-        echo "更新 luci-app-passwall 模块..."
+        echo "更新 luci-app-passwall 的子模块..."
         git submodule update --init --recursive
         echo "编译 po2lmo ..."
         cd tools/po2lmo
