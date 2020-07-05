@@ -106,15 +106,16 @@ jobs:
         git submodule update --init --recursive
         ./Configure \
         no-asm \
+        no-shared \
         --cross-compile-prefix=${target_host}- \
         --prefix=${dirn}/ssl \
         linux-armv4
-        make V=s
+        make RANLIB=${target_host}-ranlib
         sudo make install_sw
         make clean
 
-    - name: Upload artifact
-      uses: actions/upload-artifact@master
-      with:
-        name: OpenWrt
-        path: /home/runner/work/luci-app-passwall/luci-app-passwall/openwrt-sdk-bcm53xx-generic_gcc-8.4.0_musl_eabi.Linux-x86_64/openssl/Makefile
+    #- name: Upload artifact
+      #uses: actions/upload-artifact@master
+      #with:
+        #name: OpenWrt
+        #path: /home/runner/work/luci-app-passwall/luci-app-passwall/openwrt-sdk-bcm53xx-generic_gcc-8.4.0_musl_eabi.Linux-x86_64/openssl/Makefile
