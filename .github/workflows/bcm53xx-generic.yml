@@ -109,6 +109,6 @@ jobs:
         --cross-compile-prefix=${target_host}- \
         --prefix=${dirn}/ssl \
         linux-armv4
-        make
+        make V=s
         sudo make install_sw
         make clean
