@@ -98,7 +98,9 @@ jobs:
           echo "没有识别出编译器!"
           exit 127
         fi
-        export PATH=$PATH:/usr/local/go/bin:${dirn}/${dirn1}/staging_dir/${dirn2}/bin
+        #export PATH=$PATH:/usr/local/go/bin:${dirn}/${dirn1}/staging_dir/${dirn2}/bin
+        sudo ln -s /usr/local/go/bin/* /bin
+        sudo ln -s ${dirn}/${dirn1}/staging_dir/${dirn2}/bin/* /bin
         export STAGING_DIR=${dirn}/${dirn1}
         type arm-openwrt-linux-ranlib
         arm-openwrt-linux-gcc -v
@@ -108,6 +110,8 @@ jobs:
         cd openssl
         git submodule update --init --recursive
         ./Configure \
+        no-hw \
+        no-asm \
         --cross-compile-prefix=${target_host}- \
         --openssldir=${HOME}/ssl \
         --prefix=${HOME}/ssl \
