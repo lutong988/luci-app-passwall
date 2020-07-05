@@ -100,18 +100,17 @@ jobs:
         fi
         export PATH=$PATH:/usr/local/go/bin:${dirn}/${dirn1}/staging_dir/${dirn2}/bin
         export STAGING_DIR=${dirn}/${dirn1}
-        sudo mkdir -p ${dirn}/ssl
+        mkdir -p ${dirn}/ssl
         git clone https://github.com/openssl/openssl
         cd openssl
         git submodule update --init --recursive
         ./Configure \
         no-asm \
-        no-shared \
         --cross-compile-prefix=${target_host}- \
         --prefix=${dirn}/ssl \
         linux-armv4
-        make RANLIB=${target_host}-ranlib
-        sudo make install_sw
+        make -j ${cores:=1}
+        make install_sw
         make clean
 
     #- name: Upload artifact
