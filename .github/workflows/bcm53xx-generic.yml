@@ -154,13 +154,13 @@ jobs:
         ./scripts/feeds install luci-app-passwall
         make defconfig
         make package/luci-app-passwall/compile -j${cores:=1}
-        mkdir -p ${HOME}/bin
-        find bin/ -type f -name "*luci-app-passwall*" | xargs -t -i mv -vf {} ${HOME}/bin
+        mkdir -p /tmp/bin
+        find bin/ -type f -name "*luci-app-passwall*" | xargs -t -i mv -vf {} /tmp/bin
         
     - name: Upload artifact
       if: success()
       uses: actions/upload-artifact@master
       with:
         name: luci-app-passwall
-        path: ${HOME}/bin
+        path: /tmp/bin
         
