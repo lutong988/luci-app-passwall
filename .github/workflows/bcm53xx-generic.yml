@@ -160,7 +160,7 @@ jobs:
         cd ..
         make CFLAGS="-I ${dirn}/ssl/include" LDFLAGS="-L ${dirn}/ssl/lib" CC="${target_host}-gcc"
         echo "当前目录: $(pwd)"
-        ls -l /src
+        ls -l
         exit 127
         ${target_host}-strip /src/smartdns
         upx --ultra-brute --best -v /src/smartdns
