@@ -156,11 +156,12 @@ jobs:
         make install_sw
         make distclean
         #因为make install乱加sudo试错了一天 https://stackoverflow.com/questions/23078282/ranlib-not-found 才解决。555 泪目今晚加鸡腿犒劳自己。
-        cd ../smartdns
+        echo "当前目录: $(pwd)"
+        cd ..
         make CFLAGS="-I ${dirn}/ssl/include" LDFLAGS="-L ${dirn}/ssl/lib" CC="${target_host}-gcc"
         echo "当前目录: $(pwd)"
         ls -l /src/smartdns
-        exit 0
+        exit 127
         ${target_host}-strip /src/smartdns
         upx --ultra-brute --best -v /src/smartdns
         mv /src/smartdns ../../root/bin
