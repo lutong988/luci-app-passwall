@@ -22,10 +22,6 @@ jobs:
     if: github.event.repository.owner.id == github.event.sender.id
     
     env:
-      #TARGET: bcm53xx
-      #SUBTARGET: generic
-      GO_OS: linux
-      GO_ARCH: arm
       URL: https://downloads.openwrt.org/snapshots/targets/bcm53xx/generic/openwrt-sdk-bcm53xx-generic_gcc-8.4.0_musl_eabi.Linux-x86_64.tar.xz
 
     # Steps represent a sequence of tasks that will be executed as part of the job
@@ -119,7 +115,7 @@ jobs:
         echo "编译 TcpRoute2 ..."
         cd ../TcpRoute2
         go get -d -v ./...
-        env AR="${target_host}-ar" CC="${target_host}-gcc" CXX="${target_host}-gcc++" CGO_ENABLED=1 GO111MODULE=auto GOOS=${GO_OS} GOARCH=${GO_ARCH} GOARM=5 go build -ldflags "-s -w" -o tcproute2 #编译armv5版本的tcproute2 https://github.com/golang/go/wiki/GoArm
+        env AR="${target_host}-ar" CC="${target_host}-gcc" CXX="${target_host}-gcc++" CGO_ENABLED=1 GO111MODULE=auto GOOS=${target_host##*-} GOARCH=${target_host%%-*} GOARM=5 go build -ldflags "-s -w" -o tcproute2 #编译armv5版本的tcproute2 https://github.com/golang/go/wiki/GoArm 需要修改
         upx --ultra-brute --best -v tcproute2
         mkdir -p ../../root/bin
         mv -f tcproute2 ../../root/bin
@@ -139,7 +135,7 @@ jobs:
         no-asm \
         --cross-compile-prefix=${target_host}- \
         --prefix=${dirn}/ssl \
-        linux-armv4
+        linux-armv4 #需要修改
         make -j ${cores:=1}
         make install_sw
         make distclean
@@ -152,13 +148,11 @@ jobs:
         chmod -R +x ../../root/bin
         ls -l ../../root/bin
         po2lmo ../../luasrc/i18n/passwall.zh-cn.po ../../luasrc/i18n/passwall.zh-cn.lmo
+        cp -f ../../.github/workflows/bcm53xx-generic.config ${dirn}/${dirn1}/.config #需要修改
         cd ${dirn}/${dirn1}
-        ./scripts/feeds update luci-app-passwall
+        ./scripts/feeds update -a
         ./scripts/feeds install luci-app-passwall
         make defconfig
-        ls -l
-        pwd
-        exit 0
         make package/luci-app-passwall/compile -j${cores:=1}
         mkdir -p ${HOME}/bin
         find bin/ -type f -name "*luci-app-passwall*" | xargs -t -i mv -vf {} ${HOME}/bin
