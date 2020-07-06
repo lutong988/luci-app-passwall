@@ -86,9 +86,9 @@ jobs:
           [[ ${i##*/} != "host" ]]&&dirn2=${i##*/}
         done
         if [ ${dirn2} ]; then
-          echo "#编译器存放目录 ${dirn2}"
+          echo "#编译器存放文件夹 ${dirn2}"
         else
-          echo "没有识别出编译器存放目录!"
+          echo "没有识别出编译器存放文件夹!"
           exit 127
         fi
         for i in staging_dir/${dirn2}/bin/*-gcc; do
@@ -121,10 +121,8 @@ jobs:
         cd feeds/luci/applications/luci-app-passwall
         echo "更新 luci-app-passwall 的子模块..."
         git submodule update --init --recursive
-        echo "当前目录: $(pwd)"
         echo "编译 po2lmo ..."
         cd tools/po2lmo
-        echo "当前目录: $(pwd)"
         make -j ${cores:=1}
         sudo make install
         make clean
@@ -156,19 +154,15 @@ jobs:
         make install_sw
         make distclean
         #因为make install乱加sudo试错了一天 https://stackoverflow.com/questions/23078282/ranlib-not-found 才解决。555 泪目今晚加鸡腿犒劳自己。
-        echo "当前目录: $(pwd)"
         cd ..
         make CFLAGS="-I ${dirn}/ssl/include" LDFLAGS="-L ${dirn}/ssl/lib" CC="${target_host}-gcc"
-        echo "当前目录: $(pwd)"
-        ls -l
-        exit 127
-        ${target_host}-strip /src/smartdns
-        upx --ultra-brute --best -v /src/smartdns
-        mv /src/smartdns ../../root/bin
+        ${target_host}-strip src/smartdns
+        upx --ultra-brute --best -v src/smartdns
+        mv src/smartdns ../../root/bin
         chmod -R +x ../../root/bin
         ls -l ../../root/bin
         cd ${dirn}/${dirn1}
-        make package/luci-app-passwall/compile -j${cores:=1} V=s
+        make package/luci-app-passwall/compile -j${cores:=1}
         mkdir -p ${HOME}/bin
         find bin/ -type f -name "*luci-app-passwall*" | xargs -t -i mv -vf {} ${HOME}/bin
         
